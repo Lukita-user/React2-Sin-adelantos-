@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-function ItemCount({ stock, initial }) {
+export default function ItemCount({ stock, initial, onAdd }) {
   const [count, setCount] = useState(initial);
 
   const increment = () => {
@@ -11,21 +11,19 @@ function ItemCount({ stock, initial }) {
     if (count > 1) setCount(count - 1);
   };
 
-  const handleAdd = () => {
-    alert(`Agregaste ${count} unidad(es) al carrito.`);
-  };
-
   return (
-    <div style={{ marginTop: '1rem' }}>
-      <button onClick={decrement} disabled={count <= 1}>-</button>
-      <span style={{ margin: '0 1rem' }}>{count}</span>
-      <button onClick={increment} disabled={count >= stock}>+</button>
+    <div style={{ marginTop: "1rem" }}>
+      <button onClick={decrement} disabled={count <= 1} className="btn">
+        -
+      </button>
+      <span style={{ margin: "0 1rem" }}>{count}</span>
+      <button onClick={increment} disabled={count >= stock} className="btn">
+        +
+      </button>
       <br />
-      <button onClick={handleAdd} style={{ marginTop: '0.5rem' }}>
+      <button onClick={() => onAdd(count)} className="btn primary" style={{ marginTop: "0.5rem" }}>
         Agregar al carrito
       </button>
     </div>
   );
 }
-
-export default ItemCount;

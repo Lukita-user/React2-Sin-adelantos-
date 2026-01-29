@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getProductById } from '../data.js';
-import ItemDetail from './ItemDetail.jsx';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { getProductById } from "../services/firestore.js";
+import ItemDetail from "./ItemDetail.jsx";
 
-function ItemDetailContainer() {
+export default function ItemDetailContainer() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,25 +15,15 @@ function ItemDetailContainer() {
 
     getProductById(productId)
       .then((data) => {
+        if (!data) setError("Producto no encontrado");
         setProduct(data);
       })
-      .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch(() => setError("Error cargando producto"))
+      .finally(() => setLoading(false));
   }, [productId]);
 
-  if (loading) {
-    return <p>Cargando producto...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  if (loading) return <p>Cargando producto...</p>;
+  if (error) return <p>{error}</p>;
 
   return <ItemDetail product={product} />;
 }
-
-export default ItemDetailContainer;

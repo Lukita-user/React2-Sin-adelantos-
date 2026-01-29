@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getProducts, getProductsByCategory } from '../data.js';
-import ItemList from './ItemList.jsx';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { getProducts, getProductsByCategory } from "../services/firestore.js";
+import ItemList from "./ItemList.jsx";
 
-function ItemListContainer() {
+export default function ItemListContainer() {
   const { categoryId } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
 
     const fetchProducts = categoryId ? getProductsByCategory : getProducts;
 
@@ -17,8 +19,8 @@ function ItemListContainer() {
       .then((data) => {
         setProducts(data);
       })
-      .catch((error) => {
-        console.error('Error cargando productos:', error);
+      .catch((err) => {
+        setError("Error cargando productos");
         setProducts([]);
       })
       .finally(() => {
@@ -26,16 +28,8 @@ function ItemListContainer() {
       });
   }, [categoryId]);
 
-  return (
-    <section>
-      <h2>Catálogo {categoryId ? `- ${categoryId}` : ''}</h2>
-      {loading ? (
-        <p>Cargando productos...</p>
-      ) : (
-        <ItemList products={products} />
-      )}
-    </section>
-  );
-}
+  if (loading) return <p>Cargando productos...</p>;
+  if (error) return <p>{error}</p>;
 
-export default ItemListContainer;
+  return <ItemList products={products} />;
+}
